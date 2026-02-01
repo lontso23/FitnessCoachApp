@@ -340,63 +340,117 @@ const ClientDetail = () => {
               No hay dietas creadas para este cliente
             </div>
           ) : (
-            <div className="space-y-4">
-              {diets.map((diet) => (
-                <div
-                  key={diet.id}
-                  className="rounded-none border border-zinc-800 bg-zinc-950/50 p-4 hover:border-zinc-700 transition-colors"
-                  data-testid={`diet-item-${diet.id}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-bold text-white font-heading" data-testid="diet-name">{diet.name}</h3>
-                      <div className="flex gap-6 mt-2 text-sm text-zinc-400">
-                        <span data-testid="diet-kcal">Kcal: {Math.round(diet.total_kcal)}</span>
-                        <span data-testid="diet-protein">P: {Math.round(diet.total_protein)}g</span>
-                        <span data-testid="diet-carbs">C: {Math.round(diet.total_carbs)}g</span>
-                        <span data-testid="diet-fats">G: {Math.round(diet.total_fats)}g</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        onClick={() => handleExportPDF(diet.id)}
-                        variant="ghost"
-                        className="rounded-none hover:bg-zinc-800 text-zinc-400 hover:text-white uppercase tracking-wider text-xs"
-                        data-testid="export-pdf-button"
-                      >
-                        <FileDown className="w-4 h-4 mr-2" />
-                        Exportar PDF
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            className="rounded-none hover:bg-red-900 text-red-400 hover:text-red-200 uppercase tracking-wider text-xs"
-                            data-testid="delete-diet-button"
+            <>
+              {/* Histó Rico de Calorías */}
+              {diets.length > 1 && (
+                <div className="mb-6 p-4 rounded-none border border-zinc-800 bg-zinc-950/30">
+                  <div className="flex items-center gap-2 mb-4">
+                    <TrendingUp className="w-5 h-5 text-zinc-400" />
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-400">Histórico de Calorías</h3>
+                  </div>
+                  <div className="flex items-end gap-2 h-32">
+                    {diets.slice().reverse().map((diet, idx) => {
+                      const maxKcal = Math.max(...diets.map(d => d.total_kcal));
+                      const height = (diet.total_kcal / maxKcal) * 100;
+                      return (
+                        <div key={idx} className="flex-1 flex flex-col items-center gap-2">
+                          <div 
+                            className="w-full bg-zinc-700 hover:bg-zinc-600 transition-colors rounded-t-sm relative group"
+                            style={{ height: `${height}%` }}
                           >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="rounded-none bg-zinc-900 border-zinc-800">
-                          <AlertDialogHeader>
-                            <AlertDialogTitle className="text-white font-heading uppercase">¿Eliminar dieta?</AlertDialogTitle>
-                            <AlertDialogDescription className="text-zinc-400">
-                              Esta acción no se puede deshacer.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="rounded-none border-zinc-700 bg-transparent text-white hover:bg-zinc-800">Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteDiet(diet.id)} className="rounded-none bg-red-600 text-white hover:bg-red-700">
-                              Eliminar
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
+                            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-900 px-2 py-1 rounded text-xs whitespace-nowrap">
+                              {Math.round(diet.total_kcal)} kcal
+                            </div>
+                          </div>
+                          <span className="text-xs text-zinc-600 truncate w-full text-center">
+                            {new Date(diet.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
-              ))}
-            </div>
+              )}
+
+              {/* Lista de Dietas */}
+              <div className="space-y-4">
+                {diets.map((diet) => (
+                  <div
+                    key={diet.id}
+                    className="rounded-none border border-zinc-800 bg-zinc-950/50 p-4 hover:border-zinc-700 transition-colors"
+                    data-testid={`diet-item-${diet.id}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-lg font-bold text-white font-heading" data-testid="diet-name">{diet.name}</h3>
+                          <span className="text-xs text-zinc-500">
+                            {new Date(diet.created_at).toLocaleString('es-ES', { 
+                              day: '2-digit', 
+                              month: 'short', 
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+                        <div className="flex gap-6 text-sm text-zinc-400">
+                          <span data-testid="diet-kcal" className="font-mono">Kcal: {Math.round(diet.total_kcal)}</span>
+                          <span data-testid="diet-protein" className="font-mono">P: {Math.round(diet.total_protein)}g</span>
+                          <span data-testid="diet-carbs" className="font-mono">C: {Math.round(diet.total_carbs)}g</span>
+                          <span data-testid="diet-fats" className="font-mono">G: {Math.round(diet.total_fats)}g</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => navigate(`/clients/${id}/diet/${diet.id}/preview`)}
+                          variant="ghost"
+                          className="rounded-none hover:bg-zinc-800 text-zinc-400 hover:text-white uppercase tracking-wider text-xs"
+                          data-testid="preview-diet-button"
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          Vista Previa
+                        </Button>
+                        <Button
+                          onClick={() => handleExportPDF(diet.id)}
+                          variant="ghost"
+                          className="rounded-none hover:bg-zinc-800 text-zinc-400 hover:text-white uppercase tracking-wider text-xs"
+                          data-testid="export-pdf-button"
+                        >
+                          <FileDown className="w-4 h-4 mr-2" />
+                          PDF
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="rounded-none hover:bg-red-900 text-red-400 hover:text-red-200 uppercase tracking-wider text-xs"
+                              data-testid="delete-diet-button"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="rounded-none bg-zinc-900 border-zinc-800">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="text-white font-heading uppercase">¿Eliminar dieta?</AlertDialogTitle>
+                              <AlertDialogDescription className="text-zinc-400">
+                                Esta acción no se puede deshacer.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="rounded-none border-zinc-700 bg-transparent text-white hover:bg-zinc-800">Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDeleteDiet(diet.id)} className="rounded-none bg-red-600 text-white hover:bg-red-700">
+                                Eliminar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </main>
