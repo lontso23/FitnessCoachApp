@@ -9,6 +9,7 @@ import ClientForm from "./pages/ClientForm";
 import ClientDetail from "./pages/ClientDetail";
 import Foods from "./pages/Foods";
 import DietBuilder from "./pages/DietBuilder";
+import DietPreview from "./pages/DietPreview";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
