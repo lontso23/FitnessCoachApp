@@ -71,6 +71,14 @@ function App() {
               }
             />
             <Route
+              path="/clients/:id/diet/:dietId/preview"
+              element={
+                <ProtectedRoute>
+                  <DietPreview />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/foods"
               element={
                 <ProtectedRoute>
