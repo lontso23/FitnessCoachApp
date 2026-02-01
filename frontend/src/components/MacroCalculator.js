@@ -15,7 +15,7 @@ export const MacroCalculator = ({
   handleRecalculate 
 }) => {
   
-  const calculated Grams = macroMode === 'percentage' && editData.target_kcal ? {
+  const calculatedGrams = macroMode === 'percentage' && editData.target_kcal ? {
     protein: Math.round((editData.target_kcal * editData.protein_percentage / 100) / 4),
     carbs: Math.round((editData.target_kcal * editData.carbs_percentage / 100) / 4),
     fats: Math.round((editData.target_kcal * editData.fats_percentage / 100) / 9)
