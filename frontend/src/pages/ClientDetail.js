@@ -102,6 +102,102 @@ const ClientDetail = () => {
     }
   };
 
+  // Calcular TMB usando Harris-Benedict
+  const calculateTMB = (sex, weight, height, age) => {
+    if (sex === 'H') {
+      return 66.5 + (13.75 * weight) + (5.003 * height) - (6.75 * age);
+    } else {
+      return 655.1 + (9.563 * weight) + (1.850 * height) - (4.676 * age);
+    }
+  };
+
+  // Calcular kcal de mantenimiento
+  const calculateMaintenance = (tmb, activityLevel) => {
+    const multipliers = {
+      sedentaria: 1.2,
+      ligera: 1.375,
+      moderada: 1.55,
+      alta: 1.725,
+      muy_alta: 1.9
+    };
+    return tmb * (multipliers[activityLevel] || 1.2);
+  };
+
+  // Recalcular automáticamente TMB y kcal
+  const handleRecalculate = () => {
+    const tmb = calculateTMB(
+      editData.sex,
+      editData.weight,
+      editData.height,
+      editData.age
+    );
+    const maintenance = calculateMaintenance(tmb, editData.activity_level);
+    
+    setEditData({
+      ...editData,
+      tmb: Math.round(tmb),
+      maintenance_kcal: Math.round(maintenance),
+      target_kcal: Math.round(maintenance)
+    });
+    
+    toast.success('Valores recalculados');
+  };
+
+  // Calcular macros desde gramos a porcentajes
+  const calculateMacrosFromGrams = () => {
+    const proteinKcal = macroGrams.protein * 4;
+    const carbsKcal = macroGrams.carbs * 4;
+    const fatsKcal = macroGrams.fats * 9;
+    const totalKcal = proteinKcal + carbsKcal + fatsKcal;
+
+    if (totalKcal === 0) return { protein: 0, carbs: 0, fats: 0, totalKcal: 0 };
+
+    return {
+      protein: (proteinKcal / totalKcal) * 100,
+      carbs: (carbsKcal / totalKcal) * 100,
+      fats: (fatsKcal / totalKcal) * 100,
+      totalKcal
+    };
+  };
+
+  // Calcular gramos desde porcentajes y kcal objetivo
+  const calculateGramsFromPercentages = (targetKcal) => {
+    const proteinKcal = (targetKcal * editData.protein_percentage) / 100;
+    const carbsKcal = (targetKcal * editData.carbs_percentage) / 100;
+    const fatsKcal = (targetKcal * editData.fats_percentage) / 100;
+
+    return {
+      protein: Math.round(proteinKcal / 4),
+      carbs: Math.round(carbsKcal / 4),
+      fats: Math.round(fatsKcal / 9)
+    };
+  };
+
+  // Actualizar macros en gramos
+  const updateMacroGrams = (macro, value) => {
+    const newGrams = { ...macroGrams, [macro]: parseFloat(value) || 0 };
+    setMacroGrams(newGrams);
+
+    // Calcular porcentajes y kcal totales
+    const calculated = calculateMacrosFromGrams();
+    setEditData({
+      ...editData,
+      protein_percentage: calculated.protein,
+      carbs_percentage: calculated.carbs,
+      fats_percentage: calculated.fats,
+      target_kcal: calculated.totalKcal
+    });
+  };
+
+  // Al cambiar a modo gramos, calcular gramos actuales
+  const switchToGramsMode = () => {
+    if (editData.target_kcal) {
+      const grams = calculateGramsFromPercentages(editData.target_kcal);
+      setMacroGrams(grams);
+    }
+    setMacroMode('grams');
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-zinc-950 flex items-center justify-center text-white">Cargando...</div>;
   }
