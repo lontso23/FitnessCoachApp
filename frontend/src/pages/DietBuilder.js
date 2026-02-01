@@ -62,8 +62,8 @@ const DietBuilder = () => {
   };
 
   const addFoodToMeal = (mealIndex) => {
-    const updatedMeals = [...meals];
-    updatedMeals[mealIndex].foods.push({
+    const newMeals = JSON.parse(JSON.stringify(meals));
+    newMeals[mealIndex].foods.push({
       food_id: '',
       food_name: '',
       quantity_g: 100,
@@ -72,7 +72,7 @@ const DietBuilder = () => {
       carbs: 0,
       fats: 0
     });
-    setMeals(updatedMeals);
+    setMeals(newMeals);
   };
 
   const removeFoodFromMeal = (mealIndex, foodIndex) => {
