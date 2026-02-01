@@ -490,6 +490,39 @@ async def delete_diet(diet_id: str, current_user: User = Depends(get_current_use
         raise HTTPException(status_code=404, detail="Diet not found")
     return {"message": "Diet deleted successfully"}
 
+@api_router.put("/diets/{diet_id}", response_model=Diet)
+async def update_diet(diet_id: str, diet_data: DietCreate, current_user: User = Depends(get_current_user)):
+    # Verify diet exists and belongs to trainer
+    existing_diet = await db.diets.find_one({"id": diet_id, "trainer_id": current_user.id}, {"_id": 0})
+    if not existing_diet:
+        raise HTTPException(status_code=404, detail="Diet not found")
+    
+    # Calculate totals
+    total_kcal = sum(meal.total_kcal for meal in diet_data.meals)
+    total_protein = sum(meal.total_protein for meal in diet_data.meals)
+    total_carbs = sum(meal.total_carbs for meal in diet_data.meals)
+    total_fats = sum(meal.total_fats for meal in diet_data.meals)
+    
+    update_data = {
+        "name": diet_data.name,
+        "meals": [meal.model_dump() for meal in diet_data.meals],
+        "total_kcal": total_kcal,
+        "total_protein": total_protein,
+        "total_carbs": total_carbs,
+        "total_fats": total_fats,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.diets.update_one({"id": diet_id}, {"$set": update_data})
+    
+    updated_diet = await db.diets.find_one({"id": diet_id}, {"_id": 0})
+    if isinstance(updated_diet.get('created_at'), str):
+        updated_diet['created_at'] = datetime.fromisoformat(updated_diet['created_at'])
+    if isinstance(updated_diet.get('updated_at'), str):
+        updated_diet['updated_at'] = datetime.fromisoformat(updated_diet['updated_at'])
+    
+    return Diet(**updated_diet)
+
 # ============ PDF EXPORT ============
 
 @api_router.get("/diets/{diet_id}/export")
