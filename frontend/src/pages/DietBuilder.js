@@ -83,15 +83,14 @@ const DietBuilder = () => {
   };
 
   const updateFoodInMeal = (mealIndex, foodIndex, field, value) => {
-    const updatedMeals = [...meals];
-    const foodItem = updatedMeals[mealIndex].foods[foodIndex];
+    const newMeals = JSON.parse(JSON.stringify(meals));
+    const foodItem = newMeals[mealIndex].foods[foodIndex];
 
     if (field === 'food_id') {
       const selectedFood = foods.find(f => f.id === value);
       if (selectedFood) {
         foodItem.food_id = selectedFood.id;
         foodItem.food_name = selectedFood.name;
-        // Recalculate with current quantity
         const quantity = foodItem.quantity_g || 100;
         foodItem.kcal = (selectedFood.kcal_per_100g * quantity) / 100;
         foodItem.protein = (selectedFood.protein_per_100g * quantity) / 100;
@@ -110,8 +109,8 @@ const DietBuilder = () => {
       }
     }
 
-    recalculateMealTotals(updatedMeals, mealIndex);
-    setMeals(updatedMeals);
+    recalculateMealTotals(newMeals, mealIndex);
+    setMeals(newMeals);
   };
 
   const recalculateMealTotals = (mealsArray, mealIndex) => {
