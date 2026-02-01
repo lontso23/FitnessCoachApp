@@ -76,10 +76,10 @@ const DietBuilder = () => {
   };
 
   const removeFoodFromMeal = (mealIndex, foodIndex) => {
-    const updatedMeals = [...meals];
-    updatedMeals[mealIndex].foods.splice(foodIndex, 1);
-    recalculateMealTotals(updatedMeals, mealIndex);
-    setMeals(updatedMeals);
+    const newMeals = JSON.parse(JSON.stringify(meals));
+    newMeals[mealIndex].foods.splice(foodIndex, 1);
+    recalculateMealTotals(newMeals, mealIndex);
+    setMeals(newMeals);
   };
 
   const updateFoodInMeal = (mealIndex, foodIndex, field, value) => {
