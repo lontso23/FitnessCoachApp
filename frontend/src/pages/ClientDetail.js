@@ -6,6 +6,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { ArrowLeft, Edit, Trash2, Plus, FileDown, Eye, TrendingUp, Calculator, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import { MacroCalculator } from '../components/MacroCalculator';
 import {
   AlertDialog,
   AlertDialogAction,
