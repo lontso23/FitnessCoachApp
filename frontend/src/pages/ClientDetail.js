@@ -28,6 +28,9 @@ const ClientDetail = () => {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({});
+  const [macroMode, setMacroMode] = useState('percentage'); // 'percentage' or 'grams'
+  const [macroGrams, setMacroGrams] = useState({ protein: 0, carbs: 0, fats: 0 });
+  const [showCalculator, setShowCalculator] = useState(false);
 
   useEffect(() => {
     fetchData();
