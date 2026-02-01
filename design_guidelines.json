@@ -1,0 +1,138 @@
+{
+  "identity": {
+    "name": "Lontso Fitness Diet Planner",
+    "archetype": "The Performance Pro",
+    "tone": "Elite, Precision, High-Contrast, Athletic",
+    "theme_mode": "dark"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Barlow Condensed, sans-serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight uppercase",
+      "h2": "text-3xl md:text-4xl font-semibold tracking-tight uppercase",
+      "h3": "text-2xl font-semibold tracking-tight",
+      "body": "text-base leading-relaxed text-zinc-400",
+      "small": "text-sm text-zinc-500",
+      "label": "text-xs font-bold tracking-wider uppercase text-zinc-500"
+    },
+    "imports": [
+      "@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');"
+    ]
+  },
+  "colors": {
+    "palette": {
+      "background": "#09090b",
+      "foreground": "#fafafa",
+      "card": "#09090b",
+      "card_foreground": "#fafafa",
+      "popover": "#09090b",
+      "popover_foreground": "#fafafa",
+      "primary": "#fafafa",
+      "primary_foreground": "#18181b",
+      "secondary": "#27272a",
+      "secondary_foreground": "#fafafa",
+      "muted": "#27272a",
+      "muted_foreground": "#a1a1aa",
+      "accent": "#27272a",
+      "accent_foreground": "#fafafa",
+      "destructive": "#7f1d1d",
+      "destructive_foreground": "#fafafa",
+      "border": "#27272a",
+      "input": "#27272a",
+      "ring": "#fafafa"
+    },
+    "semantic": {
+      "success": "#22c55e",
+      "warning": "#eab308",
+      "error": "#ef4444",
+      "info": "#3b82f6"
+    },
+    "gradients": {
+      "subtle_glow": "bg-gradient-to-t from-zinc-900 to-zinc-950"
+    }
+  },
+  "layout": {
+    "spacing": {
+      "container_padding": "p-6 md:p-8 lg:p-12",
+      "section_gap": "gap-8",
+      "component_gap": "gap-4"
+    },
+    "grids": {
+      "dashboard": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6",
+      "diet_builder": "grid grid-cols-12 gap-2 border border-zinc-800",
+      "form_layout": "grid grid-cols-1 md:grid-cols-2 gap-6"
+    },
+    "containers": {
+      "main": "max-w-[1400px] mx-auto min-h-screen",
+      "card": "rounded-none border border-zinc-800 bg-background p-6"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "rounded-none bg-white text-black hover:bg-zinc-200 font-bold uppercase tracking-wide px-8 h-12 transition-transform active:scale-95",
+      "secondary": "rounded-none border border-zinc-700 bg-transparent text-white hover:bg-zinc-900 font-semibold uppercase tracking-wide h-12",
+      "ghost": "rounded-none hover:bg-zinc-800 text-zinc-400 hover:text-white uppercase tracking-wider text-xs"
+    },
+    "inputs": {
+      "default": "rounded-none border-zinc-800 bg-zinc-950/50 focus:ring-1 focus:ring-white focus:border-white h-12",
+      "table_cell": "rounded-none border-transparent bg-transparent hover:bg-zinc-900 focus:bg-zinc-900 h-full w-full px-2 py-1 text-sm text-center"
+    },
+    "cards": {
+      "dashboard_stat": "rounded-none border border-zinc-800 bg-zinc-950/50 p-6 flex flex-col justify-between hover:border-zinc-700 transition-colors"
+    },
+    "navigation": {
+      "sidebar": "w-64 border-r border-zinc-800 bg-black h-screen fixed left-0 top-0 hidden md:flex flex-col z-50",
+      "mobile_nav": "md:hidden fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-black h-16 flex justify-around items-center z-50"
+    }
+  },
+  "visual_enhancers": {
+    "borders": "border border-zinc-800",
+    "shadows": "none",
+    "texture": "bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none fixed inset-0 z-[9999]",
+    "animations": {
+      "hover_lift": "hover:-translate-y-1 transition-transform duration-200",
+      "fade_in": "animate-in fade-in duration-500"
+    }
+  },
+  "feature_specific_guidelines": {
+    "diet_builder": {
+      "style": "Spreadsheet-like density",
+      "header_row": "bg-zinc-900 text-zinc-400 text-xs uppercase font-bold tracking-wider py-3",
+      "row_style": "border-b border-zinc-900 hover:bg-zinc-900/50 transition-colors",
+      "total_row": "bg-zinc-900/80 font-bold text-white border-t-2 border-zinc-700"
+    },
+    "pdf_export": {
+      "page_size": "A4",
+      "orientation": "portrait",
+      "styles": "print:bg-white print:text-black print:border-black print:text-xs",
+      "note": "The PDF export must invert colors to be printer-friendly (White background, Black text)"
+    }
+  },
+  "images": {
+    "status": "Tool failed to fetch dynamic images. Use these fallback placeholders or retry.",
+    "retry_instructions": "Main Agent: Attempt to use image_selector_tool for specific queries if needed.",
+    "fallbacks": {
+      "login_hero": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop",
+      "trainer_dashboard": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2070&auto=format&fit=crop",
+      "food_bg": "https://images.unsplash.com/photo-1547592180-85f173990554?q=80&w=2070&auto=format&fit=crop",
+      "logo_placeholder": "https://placehold.co/200x50/000000/ffffff?text=LONTSO+FITNESS"
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. THEME: Enforce 'dark' class on the html element by default. This is a dark-mode first application.",
+    "2. FONT: Import Barlow Condensed and Manrope in index.css. Apply Barlow to all headings (h1-h4) and Manrope to body.",
+    "3. SHADCN: When using Shadcn components (Card, Table, Input), override the default 'rounded-md' with 'rounded-none' or 'rounded-sm' to match the sharp, athletic aesthetic.",
+    "4. DIET BUILDER: This is the core feature. Build it like a grid/spreadsheet. Avoid bulky cards for individual food items. Use a dense table layout.",
+    "5. PDF: Implement a specific 'print' media query or a separate component for PDF generation that strips the dark theme and uses a clean, white-paper layout similar to the Excel reference.",
+    "6. CALCULATOR: The Harris-Benedict calculator should be a live interactive tool. As user types weight/height, update the numbers immediately.",
+    "7. BORDER HACK: Use 'divide-y divide-zinc-800' for lists and 'border-zinc-800' for containers.",
+    "8. MICRO-INTERACTIONS: Add hover states to all table rows in the diet builder. Highlights help tracking rows in dense data.",
+    "9. TOASTS: Use 'sonner' for all success/error notifications (e.g., 'Client Saved', 'Diet Exported').",
+    "10. LOGIN: Make the login screen high impact. Split screen: Left side Form, Right side inspirational fitness image (grayscale).",
+    "11. ICONS: Use 'lucide-react' which is pre-installed. Stick to thin stroke icons to match the elegant/minimal vibe."
+  ]
+}
