@@ -8,7 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import ClientForm from "./pages/ClientForm";
 import ClientDetail from "./pages/ClientDetail";
 import Foods from "./pages/Foods";
-// import DietBuilder from "./pages/DietBuilder";
+import DietBuilder from "./pages/DietBuilder";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -61,14 +61,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/* <Route
+            <Route
               path="/clients/:clientId/diet/new"
               element={
                 <ProtectedRoute>
                   <DietBuilder />
                 </ProtectedRoute>
               }
-            /> */}
+            />
             <Route
               path="/foods"
               element={
