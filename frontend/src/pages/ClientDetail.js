@@ -238,7 +238,40 @@ const ClientDetail = () => {
                   data-testid="edit-target-input"
                 />
               </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wider text-zinc-500 font-bold">% Proteínas</Label>
+                <Input
+                  type="number"
+                  step="1"
+                  value={editData.protein_percentage}
+                  onChange={(e) => setEditData({ ...editData, protein_percentage: parseFloat(e.target.value) })}
+                  className="rounded-none border-zinc-800 bg-zinc-950/50 h-12"
+                />
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wider text-zinc-500 font-bold">% Carbohidratos</Label>
+                <Input
+                  type="number"
+                  step="1"
+                  value={editData.carbs_percentage}
+                  onChange={(e) => setEditData({ ...editData, carbs_percentage: parseFloat(e.target.value) })}
+                  className="rounded-none border-zinc-800 bg-zinc-950/50 h-12"
+                />
+              </div>
+              <div>
+                <Label className="text-xs uppercase tracking-wider text-zinc-500 font-bold">% Grasas</Label>
+                <Input
+                  type="number"
+                  step="1"
+                  value={editData.fats_percentage}
+                  onChange={(e) => setEditData({ ...editData, fats_percentage: parseFloat(e.target.value) })}
+                  className="rounded-none border-zinc-800 bg-zinc-950/50 h-12"
+                />
+              </div>
               <div className="md:col-span-3">
+                {(editData.protein_percentage + editData.carbs_percentage + editData.fats_percentage !== 100) && (
+                  <p className="text-yellow-500 text-sm mb-2">⚠️ Los porcentajes deben sumar 100%</p>
+                )}
                 <Button
                   onClick={handleUpdateClient}
                   className="rounded-none bg-white text-black hover:bg-zinc-200 font-bold uppercase tracking-wide h-12"
