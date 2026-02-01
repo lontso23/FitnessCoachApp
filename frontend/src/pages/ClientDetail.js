@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { ArrowLeft, Edit, Trash2, Plus, FileDown } from 'lucide-react';
+import { ArrowLeft, Edit, Trash2, Plus, FileDown, Eye, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   AlertDialog,
