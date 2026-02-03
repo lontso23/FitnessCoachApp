@@ -144,57 +144,18 @@ const ClientDetail = () => {
     toast.success('Valores recalculados');
   };
 
-  // Calcular macros desde gramos a porcentajes
-  const calculateMacrosFromGrams = () => {
-    const proteinKcal = macroGrams.protein * 4;
-    const carbsKcal = macroGrams.carbs * 4;
-    const fatsKcal = macroGrams.fats * 9;
-    const totalKcal = proteinKcal + carbsKcal + fatsKcal;
-
-    if (totalKcal === 0) return { protein: 0, carbs: 0, fats: 0, totalKcal: 0 };
-
-    return {
-      protein: (proteinKcal / totalKcal) * 100,
-      carbs: (carbsKcal / totalKcal) * 100,
-      fats: (fatsKcal / totalKcal) * 100,
-      totalKcal
-    };
-  };
-
-  // Calcular gramos desde porcentajes y kcal objetivo
-  const calculateGramsFromPercentages = (targetKcal) => {
-    const proteinKcal = (targetKcal * editData.protein_percentage) / 100;
-    const carbsKcal = (targetKcal * editData.carbs_percentage) / 100;
-    const fatsKcal = (targetKcal * editData.fats_percentage) / 100;
-
-    return {
-      protein: Math.round(proteinKcal / 4),
-      carbs: Math.round(carbsKcal / 4),
-      fats: Math.round(fatsKcal / 9)
-    };
-  };
-
-  // Actualizar macros en gramos
-  const updateMacroGrams = (macro, value) => {
-    const newGrams = { ...macroGrams, [macro]: parseFloat(value) || 0 };
-    setMacroGrams(newGrams);
-
-    // Calcular porcentajes y kcal totales
-    const calculated = calculateMacrosFromGrams();
-    setEditData({
-      ...editData,
-      protein_percentage: calculated.protein,
-      carbs_percentage: calculated.carbs,
-      fats_percentage: calculated.fats,
-      target_kcal: calculated.totalKcal
-    });
-  };
-
-  // Al cambiar a modo gramos, calcular gramos actuales
+  // Cambiar a modo gramos
   const switchToGramsMode = () => {
     if (editData.target_kcal) {
-      const grams = calculateGramsFromPercentages(editData.target_kcal);
-      setMacroGrams(grams);
+      const proteinKcal = (editData.target_kcal * editData.protein_percentage) / 100;
+      const carbsKcal = (editData.target_kcal * editData.carbs_percentage) / 100;
+      const fatsKcal = (editData.target_kcal * editData.fats_percentage) / 100;
+
+      setMacroGrams({
+        protein: Math.round(proteinKcal / 4),
+        carbs: Math.round(carbsKcal / 4),
+        fats: Math.round(fatsKcal / 9)
+      });
     }
     setMacroMode('grams');
   };
