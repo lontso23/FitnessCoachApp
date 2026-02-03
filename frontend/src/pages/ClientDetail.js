@@ -308,8 +308,7 @@ const ClientDetail = () => {
                   macroMode={macroMode}
                   setMacroMode={setMacroMode}
                   macroGrams={macroGrams}
-                  updateMacroGrams={updateMacroGrams}
-                  switchToGramsMode={switchToGramsMode}
+                  setMacroGrams={setMacroGrams}
                   handleRecalculate={handleRecalculate}
                 />
               </div>
