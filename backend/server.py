@@ -20,6 +20,8 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from io import BytesIO
 from fastapi.responses import StreamingResponse
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -38,7 +40,21 @@ db = client[os.environ['DB_NAME']]
 security = HTTPBearer()
 
 # Create the main app
-app = FastAPI()
+app = FastAPI(
+    title="Lontso Fitness API",
+    version="1.0.0",
+    description="Backend de la aplicación Fitness Coach"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://macrobuilder.netlify.app",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 api_router = APIRouter(prefix="/api")
 
 # ============ MODELS ============
@@ -654,20 +670,7 @@ async def root():
 # Include router
 app.include_router(api_router)
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://macrobuilder.netlify.app",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 logging.basicConfig(
     level=logging.INFO,
