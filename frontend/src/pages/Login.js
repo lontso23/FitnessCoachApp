@@ -96,7 +96,7 @@ const Login = () => {
       <div 
         className="hidden lg:block bg-cover bg-center relative"
         style={{ 
-          backgroundImage: 'url(https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop)',
+          backgroundImage: 'url(https://images.unsplash.com/photo-1689877020200-403d8542d95d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)',
           filter: 'grayscale(100%)'
         }}
       >

@@ -16,7 +16,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from io import BytesIO
 from fastapi.responses import StreamingResponse
@@ -543,122 +543,176 @@ async def update_diet(diet_id: str, diet_data: DietCreate, current_user: User = 
 
 @api_router.get("/diets/{diet_id}/export")
 async def export_diet_pdf(diet_id: str, current_user: User = Depends(get_current_user)):
-    diet = await db.diets.find_one({"id": diet_id, "trainer_id": current_user.id}, {"_id": 0})
+    diet = await db.diets.find_one(
+        {"id": diet_id, "trainer_id": current_user.id},
+        {"_id": 0}
+    )
     if not diet:
         raise HTTPException(status_code=404, detail="Diet not found")
-    
-    client = await db.clients.find_one({"id": diet['client_id']}, {"_id": 0})
+
+    client = await db.clients.find_one(
+        {"id": diet["client_id"]},
+        {"_id": 0}
+    )
     if not client:
         raise HTTPException(status_code=404, detail="Client not found")
-    
+
     buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=2*cm, bottomMargin=2*cm)
-    
-    story = []
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=2 * cm,
+        leftMargin=2 * cm,
+        topMargin=2 * cm,
+        bottomMargin=2 * cm
+    )
+
     styles = getSampleStyleSheet()
-    
-    # Title style
+    story = []
+
+    # ================= STYLES =================
+
     title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Heading1'],
-        fontSize=24,
-        textColor=colors.black,
-        spaceAfter=30,
+        "Title",
+        fontSize=22,
         alignment=TA_CENTER,
-        fontName='Helvetica-Bold'
+        fontName="Helvetica-Bold",
+        spaceAfter=20
     )
-    
-    # Subtitle style
-    subtitle_style = ParagraphStyle(
-        'CustomSubtitle',
-        parent=styles['Heading2'],
+
+    meal_style = ParagraphStyle(
+        "MealTitle",
         fontSize=14,
-        textColor=colors.black,
-        spaceAfter=20,
-        alignment=TA_LEFT,
-        fontName='Helvetica-Bold'
+        fontName="Helvetica-Bold",
+        spaceAfter=10
     )
-    
-    # Title
-    title = Paragraph(f"DIETA {client['name'].upper()}", title_style)
-    story.append(title)
-    story.append(Spacer(1, 0.5*cm))
-    
-    # Process meals
-    for meal in diet['meals']:
-        # Meal header
-        meal_title = Paragraph(f"{meal['meal_name']}", subtitle_style)
-        story.append(meal_title)
-        
-        # Create table data
-        table_data = [['Alimento', 'Cantidad (g)']]
-        for food_item in meal['foods']:
-            table_data.append([
-                food_item['food_name'],
-                f"{food_item['quantity_g']:.0f}"
+
+    small_style = ParagraphStyle(
+        "Small",
+        fontSize=10,
+        spaceAfter=6
+    )
+
+    # ================= HEADER =================
+
+    header_table_data = []
+
+    # Logo (optional)
+    logo_path = "assets/logo.png"
+    if os.path.exists(logo_path):
+        logo = Image(logo_path, width=3 * cm, height=3 * cm)
+    else:
+        logo = ""
+
+    header_table_data.append([
+        Paragraph(f"DIETA – {client['name']}", title_style),
+        logo
+    ])
+
+    header = Table(header_table_data, colWidths=[12 * cm, 4 * cm])
+    header.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("ALIGN", (1, 0), (1, 0), "RIGHT"),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
+    ]))
+
+    story.append(header)
+    story.append(Spacer(1, 0.5 * cm))
+
+    # ================= MEALS =================
+
+    for meal in diet["meals"]:
+        # Meal title
+        story.append(Paragraph(meal["meal_name"].upper(), meal_style))
+
+        # Foods table
+        food_table_data = [["Alimento", "Cantidad (g)"]]
+
+        for food in meal["foods"]:
+            food_table_data.append([
+                food["food_name"],
+                f"{food['quantity_g']:.0f}"
             ])
-        
-        # Add totals row
-        table_data.append([
-            'TOTAL',
-            f"Kcal: {meal['total_kcal']:.0f} | P: {meal['total_protein']:.1f}g | C: {meal['total_carbs']:.1f}g | G: {meal['total_fats']:.1f}g"
-        ])
-        
-        # Create table
-        table = Table(table_data, colWidths=[12*cm, 5*cm])
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 0), 12),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -2), colors.white),
-            ('BACKGROUND', (0, -1), (-1, -1), colors.lightgrey),
-            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+
+        food_table = Table(
+            food_table_data,
+            colWidths=[10 * cm, 4 * cm]
+        )
+
+        food_table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.black),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("ALIGN", (1, 1), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
         ]))
-        
-        story.append(table)
-        story.append(Spacer(1, 0.8*cm))
-    
-    # Add daily totals
-    totals_title = Paragraph("TOTALES DIARIOS", subtitle_style)
-    story.append(totals_title)
-    
-    totals_data = [
-        ['Calorías', 'Proteínas', 'Carbohidratos', 'Grasas'],
+
+        story.append(food_table)
+        story.append(Spacer(1, 0.2 * cm))
+
+        # Meal totals table
+        totals_meal_data = [
+            ["Kcal", "Proteínas", "Carbohidratos", "Grasas"],
+            [
+                f"{meal['total_kcal']:.0f}",
+                f"{meal['total_protein']:.1f} g",
+                f"{meal['total_carbs']:.1f} g",
+                f"{meal['total_fats']:.1f} g",
+            ]
+        ]
+
+        totals_meal_table = Table(
+            totals_meal_data,
+            colWidths=[4 * cm, 4 * cm, 4 * cm, 4 * cm]
+        )
+
+        totals_meal_table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ]))
+
+        story.append(totals_meal_table)
+        story.append(Spacer(1, 0.6 * cm))
+
+    # ================= DAILY TOTALS =================
+
+    story.append(Paragraph("TOTALES DIARIOS", meal_style))
+
+    daily_totals = [
+        ["Calorías", "Proteínas", "Carbohidratos", "Grasas"],
         [
             f"{diet['total_kcal']:.0f} kcal",
-            f"{diet['total_protein']:.1f}g",
-            f"{diet['total_carbs']:.1f}g",
-            f"{diet['total_fats']:.1f}g"
+            f"{diet['total_protein']:.1f} g",
+            f"{diet['total_carbs']:.1f} g",
+            f"{diet['total_fats']:.1f} g",
         ]
     ]
-    
-    totals_table = Table(totals_data, colWidths=[4.25*cm, 4.25*cm, 4.25*cm, 4.25*cm])
-    totals_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.black),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 12),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.lightgrey),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 1), (-1, -1), 11),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+
+    daily_table = Table(daily_totals, colWidths=[4 * cm] * 4)
+    daily_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.black),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
     ]))
-    
-    story.append(totals_table)
-    
+
+    story.append(daily_table)
+
     doc.build(story)
     buffer.seek(0)
-    
+
     return StreamingResponse(
         buffer,
         media_type="application/pdf",
-        headers={"Content-Disposition": f"attachment; filename=dieta_{client['name'].replace(' ', '_')}.pdf"}
+        headers={
+            "Content-Disposition": f"attachment; filename=dieta_{client['name'].replace(' ', '_')}.pdf"
+        }
     )
 
 # ============ HEALTH CHECK ============
